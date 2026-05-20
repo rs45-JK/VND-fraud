@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud & Bonus Quick Reference</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-red: #ef4444;
+            --accent-yellow: #fbbf24;
+            --accent-green: #22c55e;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            box-sizing: border-box;
+            padding-bottom: 60px; /* Space for the footer signature */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: 2px solid var(--accent-blue);
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 1px; }
+
+        .meta-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 25px;
+        }
+
+        .update-date {
+            font-weight: bold;
+            color: var(--accent-yellow);
+            background: #1e293b;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover { border-color: var(--accent-blue); }
+
+        .card-header {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: auto;
+            text-transform: uppercase;
+        }
+
+        .tag-bonus { background: #1e40af; color: white; }
+        .tag-fraud { background: #991b1b; color: white; }
+        .tag-vender { background: #3f6212; color: white; }
+
+        ul { margin: 10px 0; padding-left: 20px; color: var(--text-dim); }
+        li { margin-bottom: 5px; }
+        
+        .important { color: var(--accent-red); font-weight: bold; }
+        .safe { color: var(--accent-green); font-weight: bold; }
+        
+        .google-sheet-btn {
+            display: inline-block;
+            background: #107c10;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .search-id-box {
+            background: #334155;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: white;
+            margin-top: auto;
+        }
+
+        /* Less visible bottom-right signature layout */
+        footer {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 0.75rem;
+            color: #475569; /* Very faint slate color to blend into background */
+            font-family: monospace;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Fraud Detection & Bonus Protocol</h1>
+        <a href="https://docs.google.com/spreadsheets/d/1yMv73i4JBQst6MdRqdWqfNyv0WcCuK7jpgB2-Be-ls4/edit?gid=666116263#gid=666116263" target="_blank" class="google-sheet-btn">📊 Open VND Fraud Sheet</a>
+    </header>
+
+    <div class="meta-header">
+        <div class="update-date">📅 Last Updated: 2026-05-02</div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <div class="card-header">🛑 FDB: Slots & Bắn cá <span class="tag tag-bonus">VND Sheet</span></div>
+            <ul>
+                <li>Target Games: <strong>Slots & Bắn cá</strong> and <strong>Sports</strong></li>
+                <li><span class="important">Mandatory Action:</span> Add these specific bonus claims to the <strong>VND Fraud G-Sheet</strong>.</li>
+            </ul>
+            <div class="search-id-box">
+                Slots & Bắn cá Nạp lần đầu: 150% lên đến 1.000.000 VND<br>
+                Slots & Bắn cá Nạp lần đầu: 188% lên đến 888.000 VND
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">🛑 FDB: Nạp đầu / Gửi Tiền Lần Đầu <span class="tag tag-bonus">Bonus Rules</span></div>
+            <ul>
+                <li>Target Promotion Keywords: <strong>Nạp đầu</strong> / <strong>Gửi Tiền Lần Đầu</strong></li>
+                <li><span class="important">Mandatory Check:</span> Conduct a thorough tracking review of both <strong>MAC address</strong> configuration and <strong>AB Bet history</strong>.</li>
+            </ul>
+            <div class="search-id-box">
+                Đá Gà Gửi Tiền Lần Đầu: 100% lên đến 1.888.000 VND<br>
+                Đá Gà Gửi Tiền Lần Đầu: 100% lên đến 2.000.000 VND
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">🛑 Fingerprint Hide Fraud <span class="tag tag-fraud">Device</span></div>
+            <ul>
+                <li><strong>Trigger Status:</strong> Computer web was on a <strong>regular deposit</strong> (NOT on a bonus claim).</li>
+                <li><strong>Device Target:</strong> Computer/Web users trying to hide fingerprints.</li>
+                <li><span class="important">Action:</span> If the player continues using the computer web platform, <strong>proceed to adjust that account</strong>.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <div class="card-header">🛑 Cockfighting Protocols <span class="tag tag-vender">Vendor</span></div>
+            <ul>
+                <li><strong>CFE:</strong> Hold all new winning players.</li>
+                <li><strong>GA28:</strong> Hold all new winning players in <strong>GO, P3, and KS arenas</strong>.</li>
+                <li><strong>SV388:</strong> Hold all new winning players in <strong>SB1 and NN1 arenas</strong>.</li>
+                <li><span class="safe">ICF:</span> <strong>SKIP</strong> (No restriction).</li>
+                <li><span class="important">Action:</span> Add flagged cases directly to the VND Sheet.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <div class="card-header">🛑 Suspicious Taixiu Winning <span class="tag tag-fraud">Casino</span></div>
+            <ul>
+                <li>Vendor Platform: <strong>SV388 / Casino Game</strong></li>
+                <li>Condition: Game type is <strong>"Taixiu"</strong></li>
+                <li><span class="important">Data Analysis:</span> Review account transaction summary metrics. Audit closely for highly suspicious transactional patterns appearing across the player's <strong>Deposit totals</strong>, <strong>Withdrawal volume</strong>, and overall cumulative <strong>Turnover metrics</strong>.</li>
+                <li><span class="important">Action:</span> Escalate and raise directly to the VND G-Sheet.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <div class="card-header">🛑 CardPC Abuser Rules <span class="tag tag-fraud">Payment</span></div>
+            <ul>
+                <li><strong>Abuser Profile:</strong> Players who use the CardPC method to deposit large sums of money (e.g., <strong>5,000 / 10,000 and above</strong>), perform quick trade bets, and instantly withdraw.</li>
+                <li><strong>TCG (Lottery):</strong> Hold all new players who played Lottery and deposited via CardPC.</li>
+                <li><strong>Casino:</strong> Hold all new players who played Casino and deposited via CardPC.</li>
+                <li><span class="safe">SKIP:</span> Do <strong>NOT</strong> block or adjust genuine new players who are simply using CardPC to deposit for their 1st time to play normally.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<footer>Created by Janith K on 2026-05-17</footer>
+</body>
+</html>
