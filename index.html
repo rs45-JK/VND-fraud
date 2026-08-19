@@ -1,234 +1,827 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fraud & Bonus Quick Reference</title>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --accent-blue: #38bdf8;
-            --accent-red: #ef4444;
-            --accent-yellow: #fbbf24;
-            --accent-green: #22c55e;
-            --border-color: #334155;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bonus Abuse Pattern Recognition — Risk Ops Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=Noto+Sans+Sinhala:wght@400;500;600&family=Noto+Sans+Tamil:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #12151a;
+    --panel: #1a1e26;
+    --panel-2: #20242e;
+    --line: #2b303c;
+    --text: #e7e6e1;
+    --text-dim: #9aa0ac;
+    --amber: #e0a53e;
+    --amber-dim: #6b5a30;
+    --red: #d9584f;
+    --red-dim: #5a2e2b;
+    --green: #6fbf8b;
+    --mono: 'IBM Plex Mono', monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', 'Noto Sans Sinhala', 'Noto Sans Tamil', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    line-height: 1.6;
+    padding-bottom: 90px;
+  }
+  a{color:inherit;}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-            min-height: 100vh;
-            position: relative;
-            box-sizing: border-box;
-            padding-bottom: 60px; /* Space for the footer signature */
-        }
+  /* ---------- Lang switch ---------- */
+  .langbar{
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display:flex;
+    justify-content:flex-end;
+    gap: 6px;
+    padding: 12px 24px;
+    background: rgba(18,21,26,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  .lang-btn{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    background: var(--panel);
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    padding: 7px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all .18s ease;
+  }
+  .lang-btn:hover{ color: var(--text); border-color: var(--amber); }
+  .lang-btn.active{
+    background: var(--amber);
+    color: #1a1305;
+    border-color: var(--amber);
+    font-weight: 600;
+  }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+  /* ---------- Header ---------- */
+  header{
+    border-bottom: 1px solid var(--line);
+    padding: 40px 24px 32px;
+    background: radial-gradient(ellipse 900px 300px at 15% 0%, rgba(224,165,62,0.08), transparent 60%);
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px; height:7px;
+    background: var(--amber);
+    border-radius: 50%;
+    display:inline-block;
+    box-shadow: 0 0 0 3px var(--amber-dim);
+    animation: pulse-dot 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse-dot{
+    0%,100%{ box-shadow: 0 0 0 3px var(--amber-dim); }
+    50%{ box-shadow: 0 0 0 6px transparent; }
+  }
+  h1{
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(26px, 4vw, 40px);
+    letter-spacing: -0.01em;
+    max-width: 820px;
+  }
+  .lede{
+    margin-top: 14px;
+    max-width: 680px;
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+  .scope-box{
+    margin-top: 26px;
+    max-width: 820px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--amber);
+    background: var(--panel);
+    padding: 16px 18px;
+    font-size: 13.5px;
+    color: var(--text-dim);
+  }
 
-        header {
-            border-bottom: 2px solid var(--accent-blue);
-            margin-bottom: 25px;
-            padding-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+  /* ---------- Nav ---------- */
+  nav{
+    max-width: 1060px;
+    margin: 26px auto 0;
+    padding: 0 24px;
+    display:flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  nav a{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    padding: 7px 12px;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: border-color .15s, color .15s, transform .15s;
+  }
+  nav a:hover{ border-color: var(--amber); color: var(--amber); transform: translateY(-1px); }
 
-        h1 { margin: 0; font-size: 1.5rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 1px; }
+  main{
+    max-width: 1060px;
+    margin: 40px auto 0;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-        .meta-header {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 25px;
-        }
+  /* ---------- Pattern accordion ---------- */
+  .pattern{
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 8px;
+    overflow: hidden;
+    scroll-margin-top: 70px;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+  .pattern.in-view{ opacity: 1; transform: translateY(0); }
 
-        .update-date {
-            font-weight: bold;
-            color: var(--accent-yellow);
-            background: #1e293b;
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
+  .pattern-head{
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 22px;
+    background: var(--panel-2);
+    cursor: pointer;
+    user-select: none;
+  }
+  .pattern-head:hover{ background: #242938; }
+  .head-left{ display:flex; align-items:center; gap:16px; }
+  .pattern-id{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--amber);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .pattern-title{
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 18px;
+  }
+  .head-right{ display:flex; align-items:center; gap: 14px; }
+  .severity{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 3px;
+    white-space: nowrap;
+    border: 1px solid var(--red-dim);
+    color: var(--red);
+    background: rgba(217,88,79,0.08);
+  }
+  .severity.med{ border-color: var(--amber-dim); color: var(--amber); background: rgba(224,165,62,0.08); }
+  .chevron{
+    width: 18px; height: 18px;
+    flex-shrink:0;
+    transition: transform .3s ease;
+    color: var(--text-dim);
+  }
+  .pattern.open .chevron{ transform: rotate(180deg); color: var(--amber); }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-        }
+  .pattern-body-wrap{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .4s ease;
+  }
+  .pattern.open .pattern-body-wrap{ max-height: 1200px; }
 
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            transition: transform 0.2s;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+  .pattern-body{ padding: 22px 24px 26px; }
+  .field{ margin-bottom: 18px; }
+  .field:last-child{ margin-bottom: 0; }
+  .field-label{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .field-label .bar{ width:14px; height:1px; background: var(--line); }
+  .definition{ font-size: 14.5px; color: var(--text); max-width: 720px; }
 
-        .card:hover { border-color: var(--accent-blue); }
+  .signals{ list-style:none; display:flex; flex-direction:column; gap:9px; }
+  .signals li{
+    font-size: 14px;
+    color: var(--text);
+    padding-left: 20px;
+    position: relative;
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  .pattern.open .signals li{
+    animation: slide-in .35s ease forwards;
+  }
+  .pattern.open .signals li:nth-child(1){ animation-delay: .05s; }
+  .pattern.open .signals li:nth-child(2){ animation-delay: .1s; }
+  .pattern.open .signals li:nth-child(3){ animation-delay: .15s; }
+  .pattern.open .signals li:nth-child(4){ animation-delay: .2s; }
+  .pattern.open .signals li:nth-child(5){ animation-delay: .25s; }
+  @keyframes slide-in{ to{ opacity:1; transform: translateX(0); } }
+  .signals li::before{
+    content:"▸";
+    position:absolute; left:0; top:0;
+    color: var(--amber);
+    font-size: 12px;
+  }
 
-        .card-header {
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-        }
+  .escalation{
+    font-size: 13.5px;
+    color: var(--text-dim);
+    border-left: 2px solid var(--red-dim);
+    padding-left: 14px;
+  }
 
-        .tag {
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            margin-left: auto;
-            text-transform: uppercase;
-        }
+  /* ---------- Chain diagram ---------- */
+  .chain-section{
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 8px;
+    padding: 26px 24px;
+    scroll-margin-top: 70px;
+  }
+  .chain-flow{
+    display:flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 20px 0 18px;
+  }
+  .chain-node{
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 9px 13px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .chain-node.risk{ border-color: var(--red-dim); color: var(--red); }
+  .chain-arrow{
+    color: var(--amber);
+    font-size: 15px;
+    animation: arrow-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes arrow-pulse{
+    0%,100%{ opacity: .45; transform: translateX(0); }
+    50%{ opacity: 1; transform: translateX(3px); }
+  }
+  .chain-note{
+    font-size: 13.5px;
+    color: var(--text-dim);
+    max-width: 760px;
+    border-left: 2px solid var(--amber-dim);
+    padding-left: 14px;
+  }
 
-        .tag-bonus { background: #1e40af; color: white; }
-        .tag-fraud { background: #991b1b; color: white; }
-        .tag-vender { background: #3f6212; color: white; }
+  /* ---------- Quiz ---------- */
+  .quiz-section{
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 8px;
+    padding: 26px 24px 28px;
+    scroll-margin-top: 70px;
+  }
+  .quiz-head{ display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px; margin-bottom: 22px; }
+  .quiz-title{ font-family: var(--display); font-weight:600; font-size: 19px; }
+  .quiz-score{
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--amber);
+    border: 1px solid var(--amber-dim);
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+  .q-card{
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 18px 18px 20px;
+    margin-bottom: 14px;
+    background: var(--panel-2);
+  }
+  .q-prompt{ font-size: 14.5px; margin-bottom: 14px; }
+  .q-options{ display:flex; flex-direction:column; gap:9px; }
+  .q-option{
+    text-align:left;
+    font-family: var(--body);
+    font-size: 13.5px;
+    color: var(--text);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 11px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, transform .1s;
+  }
+  .q-option:hover:not(:disabled){ border-color: var(--amber); transform: translateX(2px); }
+  .q-option:disabled{ cursor: default; }
+  .q-option.correct{ border-color: var(--green); background: rgba(111,191,139,0.1); color: var(--green); }
+  .q-option.wrong{ border-color: var(--red); background: rgba(217,88,79,0.1); color: var(--red); }
+  .q-feedback{
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-dim);
+    display:none;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+  }
+  .q-feedback.show{ display:block; animation: fade-in .3s ease; }
+  @keyframes fade-in{ from{opacity:0;} to{opacity:1;} }
 
-        ul { margin: 10px 0; padding-left: 20px; color: var(--text-dim); }
-        li { margin-bottom: 5px; }
-        
-        .important { color: var(--accent-red); font-weight: bold; }
-        .safe { color: var(--accent-green); font-weight: bold; }
-        
-        .google-sheet-btn {
-            display: inline-block;
-            background: #107c10;
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
+  footer{
+    max-width: 1060px;
+    margin: 40px auto 0;
+    padding: 20px 24px 0;
+    border-top: 1px solid var(--line);
+    color: var(--text-dim);
+    font-size: 12.5px;
+  }
 
-        .search-id-box {
-            background: #334155;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            color: white;
-            margin-top: auto;
-        }
-
-        /* Less visible bottom-right signature layout */
-        footer {
-            position: absolute;
-            bottom: 15px;
-            right: 20px;
-            font-size: 0.75rem;
-            color: #475569; /* Very faint slate color to blend into background */
-            font-family: monospace;
-            user-select: none;
-        }
-    </style>
+  @media (max-width: 640px){
+    .pattern-title{ font-size: 15.5px; }
+    .head-left{ gap: 10px; }
+    .langbar{ justify-content: center; }
+  }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>Fraud Detection & Bonus Protocol</h1>
-    </header>
-
-    <div class="meta-header">
-        <div class="update-date">📅 Last Updated: 2026-05-23</div>
-    </div>
-
-    <div class="grid">
-        <div class="card">
-            <div class="card-header">🛑 FDB: Slots & Bắn cá <span class="tag tag-bonus">VND Sheet</span></div>
-            <ul>
-                <li>Target Games: <strong>Slots & Bắn cá</strong> and <strong>Sports</strong></li>
-                <li><span class="important">Mandatory Action:</span> Add these specific bonus claims to the <strong>VND Fraud G-Sheet</strong>.</li>
-            </ul>
-            <div class="search-id-box">
-                • Nạp lần đầu - Slots & Bắn cá: 150%<br>
-                • Slots & Bắn cá Nạp lần đầu: 188% lên đến 888.000 VND<br>
-                • Slots & Bắn cá Nạp lần đầu: 150% lên đến 1.000.000 VND<br>
-                • Slots & Bắn cá Nạp lần đầu: 188% lên đến 880.000đ<br>
-                • Casino trực tuyến Nạp đầu: 88% lên đến 888.000 VND
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">🛑 FDB: Nạp đầu / Gửi Tiền Lần Đầu <span class="tag tag-bonus">Bonus Rules</span></div>
-            <ul>
-                <li>Target Promotion Keywords: <strong>Nạp đầu</strong> / <strong>Gửi Tiền Lần Đầu</strong></li>
-                <li><span class="important">Mandatory Check:</span> Conduct a thorough tracking review of both <strong>MAC address</strong> configuration and <strong>AB Bet history</strong>.</li>
-            </ul>
-            <div class="search-id-box">
-                • Cược Miễn phí tất cả các game MCW<br>
-                • Thưởng Nạp Giờ Vàng: Slots & Bắn cá: 40%<br>
-                • Golden Hour Deposit Bonus: Slots & Fish Shooting: 40%<br>
-                • Đá Gà Gửi Tiền Lần Đầu: 100% lên đến 2.000.000 VND<br>
-                • Đá Gà Gửi Tiền Lần Đầu: 100% lên đến 1.888.000 VND<br>
-                • Gửi tiền lần đầu - Đá Gà: 100% lên đến 1.500.000<br>
-                • First Deposit - Slots & Fish Shooting: 150% Slots<br>
-                • FDB abuser
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">🛑 Fingerprint Hide Fraud <span class="tag tag-fraud">Device</span></div>
-            <ul>
-                <li><strong>Trigger Status:</strong> Computer web was on a <strong>regular deposit</strong> (NOT on a bonus claim).</li>
-                <li><strong>Device Target:</strong> Computer/Web users trying to hide fingerprints.</li>
-                <li><span class="important">Action:</span> If the player continues using the computer web platform, <strong>proceed to adjust that account</strong>.</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <div class="card-header">🛑 Cockfighting Protocols <span class="tag tag-vender">Vendor</span></div>
-            <ul>
-                <li><strong>CFE:</strong> Hold all new winning players.</li>
-                <li><strong>GA28:</strong> Hold all new winning players in <strong>GO, P3, KS, and K88 arenas</strong>.</li>
-                <li><strong>SV388:</strong> Hold all new winning players in <strong>SB1 and NN1 arenas</strong>.</li>
-                <li><span class="safe">ICF:</span> <strong>SKIP</strong> (No restriction).</li>
-                <li><span class="important">Action:</span> Add flagged cases directly to the VND Sheet.</li>
-                <li><span class="important">⚠️ NEW:</span> Updated monitoring required for <strong>GA28 K88 arenas</strong> - please share with your team.</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <div class="card-header">🛑 Suspicious Taixiu Winning <span class="tag tag-fraud">Casino</span></div>
-            <ul>
-                <li>Vendor Platform: <strong>SV388 / Casino Game</strong></li>
-                <li>Condition: Game type is <strong>"Taixiu"</strong></li>
-                <li><span class="important">Data Analysis:</span> Review account transaction summary metrics. Audit closely for highly suspicious transactional patterns appearing across the player's <strong>Deposit totals</strong>, <strong>Withdrawal volume</strong>, and overall cumulative <strong>Turnover metrics</strong>.</li>
-                <li><span class="important">Action:</span> Escalate and raise directly to the VND G-Sheet.</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <div class="card-header">🛑 CardPC Abuser Rules <span class="tag tag-fraud">Payment</span></div>
-            <ul>
-                <li><strong>Abuser Profile:</strong> Players who use the CardPC method to deposit large sums of money (e.g., <strong>5,000 / 10,000 and above</strong>), perform quick trade bets, and instantly withdraw.</li>
-                <li><strong>TCG (Lottery):</strong> Hold all new players who played Lottery and deposited via CardPC.</li>
-                <li><strong>Casino:</strong> Hold all new players who played Casino and deposited via CardPC.</li>
-                <li><span class="safe">SKIP:</span> Do <strong>NOT</strong> block or adjust genuine new players who are simply using CardPC to deposit for their 1st time to play normally.</li>
-            </ul>
-        </div>
-    </div>
+<div class="langbar">
+  <button class="lang-btn active" data-lang="en">EN</button>
+  <button class="lang-btn" data-lang="si">සිංහල</button>
+  <button class="lang-btn" data-lang="ta">தமிழ்</button>
 </div>
 
-<footer>Created by Janith K on 2026-05-24</footer>
+<header>
+  <div class="eyebrow" data-i18n="eyebrow"></div>
+  <h1 data-i18n="title"></h1>
+  <p class="lede" data-i18n="lede"></p>
+  <div class="scope-box"><b data-i18n="scopeB"></b> <span data-i18n="scopeText"></span></div>
+</header>
+
+<nav>
+  <a href="#p1" data-i18n="nav1"></a>
+  <a href="#p2" data-i18n="nav2"></a>
+  <a href="#p3" data-i18n="nav3"></a>
+  <a href="#p4" data-i18n="nav4"></a>
+  <a href="#p5" data-i18n="nav5"></a>
+  <a href="#chain" data-i18n="navChain"></a>
+  <a href="#quiz" data-i18n="navQuiz"></a>
+</nav>
+
+<main id="main"></main>
+
+<footer data-i18n="footer"></footer>
+
+<script>
+const T = {
+en:{
+  eyebrow:"Risk Ops — Internal Training Reference",
+  title:"Bonus Abuse Pattern Recognition",
+  lede:"A detection-focused reference for identifying coordinated bonus and turnover abuse across player accounts. Built for spotting the signal in transaction and account data — not a description of how to run these schemes.",
+  scopeB:"Purpose & scope.",
+  scopeText:"Each pattern below is written as an analyst checklist: what the abuse looks like from the outside, which data points to pull, and what to escalate. Exact exploit sequences and system-bypass mechanics are intentionally left out — that detail isn't needed to catch the pattern.",
+  nav1:"01 · Chip Dumping", nav2:"02 · Hide Balance / Force Close", nav3:"03 · Multiple Account Creation", nav4:"04 · Refer-a-Friend Abuse", nav5:"05 · In-Out / Bonus Farming", navChain:"Fraud Chain", navQuiz:"Check Yourself",
+  whatIs:"What it is", signalsLbl:"Detection signals", escLbl:"Escalation",
+  highSev:"High Severity", medSev:"Medium Severity",
+  p1title:"Chip Dumping / Opposite Betting",
+  p1def:"Two or more linked accounts place opposing bets on the same outcome (e.g. one on Player, one on Banker) so that whichever side wins, balance effectively moves from one account to the other with no net loss.",
+  p1s1:"Two accounts active on the same table/round placing bets on opposite outcomes",
+  p1s2:"Win/loss timing across the two accounts is inversely correlated session after session",
+  p1s3:"Shared device ID, IP address, payment method, or KYC details between the accounts",
+  p1s4:"Bet sizing on both accounts moves in lockstep (mirrored stake amounts)",
+  p1s5:"Net balance across the pair stays roughly flat while one account's withdrawable balance rises",
+  p1esc:"Flag the account pair for linkage review, pull shared session/device fingerprint report, hold withdrawals on both accounts pending investigation.",
+  p2title:"Hide Balance / Force Close Bonus Fraud",
+  p2def:"A player manipulates displayed balance during active gameplay so the system misreads their session as a loss, which can trigger automatic bonus forfeiture — releasing turnover restrictions on funds that haven't completed the required wagering.",
+  p2s1:"Balance drops sharply to near-zero without a matching loss transaction in the bet log",
+  p2s2:"A minimum-value deposit lands within minutes of that unexplained balance drop",
+  p2s3:"Bonus status flips from \"active\" to \"forfeited\" immediately after that deposit event",
+  p2s4:"Turnover completion percentage is low or near-zero at the moment the bonus is forfeited",
+  p2s5:"Same balance-drop → min-deposit → forfeiture sequence repeats across multiple sessions for the same player",
+  p2esc:"Hold the withdrawal, audit the bonus ledger's status-change timestamps against the balance/deposit event log, verify turnover completion against the raw bet history rather than the system's forfeiture flag.",
+  p3title:"Multiple Account Creation (MAC)",
+  p3def:"One person creates several accounts to repeatedly claim welcome or first-deposit bonuses that are meant to be one-per-person.",
+  p3s1:"Multiple accounts sharing device ID, IP range, payment method, or overlapping personal details",
+  p3s2:"Registration timestamps for the accounts cluster tightly together",
+  p3s3:"Near-identical gameplay pattern immediately after bonus credit, then inactivity",
+  p3s4:"Accounts go dormant once the welcome bonus is consumed and withdrawn",
+  p3esc:"Cross-reference KYC fields and device fingerprinting across the flagged cluster, group accounts for a consolidated review rather than assessing each in isolation.",
+  p4title:"Refer-a-Friend (RAF) Bonus Abuse",
+  p4def:"Instead of referring genuine new players, someone refers accounts they control themselves to collect the referral bonus, then consolidates the funds back to one main account.",
+  p4s1:"Referrer and referred account share identifying attributes (device, IP, payment details)",
+  p4s2:"Referred accounts register via the link but show minimal genuine engagement before claiming the bonus",
+  p4s3:"Referral bonus funds move toward a single account shortly after — often overlapping with chip-dumping-style transfers (Pattern 01)",
+  p4s4:"One referral link accounts for an unusually high share of a single player's referral volume",
+  p4esc:"Map the referral graph for the flagged link, check downstream fund consolidation path, cross-check against Pattern 01 and Pattern 03 linkage data.",
+  p5title:"In-Out Fraud / Bonus Farming",
+  p5def:"A player minimizes their own risk and repeatedly cycles deposit → bonus → turnover → withdrawal, effectively farming the bonus amount as guaranteed profit rather than gaming normally.",
+  p5s1:"High-frequency deposit/withdraw cycling on the same account over a short period",
+  p5s2:"Unusually low win/loss variance while completing turnover — bets sized to avoid real risk",
+  p5s3:"Withdrawal requested very soon after turnover requirement is met",
+  p5s4:"The same deposit → bonus → withdraw cycle repeats across many consecutive bonus periods",
+  p5s5:"Player's bonus-to-turnover ratio is consistently at or just above the minimum threshold, cycle after cycle",
+  p5esc:"Track bonus-to-turnover ratio and cycle frequency at the player level over time, flag accounts with sustained low-variance turnover completion for bonus eligibility review.",
+  chainTitle:"Why one indicator is never enough",
+  chainDef:"These patterns rarely happen in isolation. A real fraud case often chains several together — don't judge on one indicator alone: review account linkages, deposit/withdrawal history, betting pattern, bonus history, and transaction history together.",
+  chainNode1:"MAC / RAF", chainNode2:"Bonus Claimed", chainNode3:"Hide Balance / Force Close", chainNode4:"Chip Dumping", chainNode5:"Withdrawal",
+  quizTitle:"Check yourself", quizScore:"Score: ",
+  q1p:"A player's balance suddenly drops to near-zero with no matching loss in the bet log, followed minutes later by a minimum deposit. Which pattern is this?",
+  q1a:"Chip Dumping", q1b:"Hide Balance / Force Close Bonus Fraud", q1c:"Multiple Account Creation",
+  q1fb:"The balance-drop → min-deposit → forfeiture sequence is the signature of Hide Balance / Force Close fraud.",
+  q2p:"Two accounts on the same round place opposite bets, and their results are always inverse. What should you pull first?",
+  q2a:"Shared device/IP report between the accounts", q2b:"The player's favorite game", q2c:"Their account creation date",
+  q2fb:"Shared device, IP, or payment linkage is what confirms two accounts are actually one operator running chip dumping.",
+  q3p:"A player deposits, claims a reload bonus, bets with almost no variance to clear turnover fast, withdraws, then repeats the same cycle weekly. What's this called?",
+  q3a:"Refer-a-Friend Abuse", q3b:"In-Out Fraud / Bonus Farming", q3c:"Multiple Account Creation",
+  q3fb:"Low-variance turnover clearing plus a repeating deposit-withdraw cycle is the core signature of bonus farming.",
+  q4p:"Why shouldn't you flag a fraud case based on a single indicator alone?",
+  q4a:"Single indicators are always false positives", q4b:"Real fraud usually chains several patterns together, so linkage, transaction, and betting data should be reviewed as a set", q4c:"Policy requires at least 5 flags before any review",
+  q4fb:"Correct — MAC/RAF, balance manipulation, and chip dumping often chain into one case, so the full data picture matters more than any single flag.",
+  footer:"Internal reference — Risk Division. For onboarding and pattern-recognition training only."
+},
+si:{
+  eyebrow:"රිස්ක් Ops — අභ්‍යන්තර පුහුණු මාර්ගෝපදේශය",
+  title:"Bonus අනිසි භාවිත රටා හඳුනාගැනීම",
+  lede:"Player accounts ගණනාවක් හරහා සම්බන්ධීකෘත bonus/turnover අනිසි භාවිතය හඳුනාගැනීම සඳහා වූ reference එකක්. Transaction/account දත්ත වල signal එක හඳුනාගැනීම සඳහා සකසා ඇත — මේ scheme run කරන ආකාරය විස්තර කිරීමක් නෙවෙයි.",
+  scopeB:"අරමුණ සහ scope.",
+  scopeText:"පහත pattern එකක් analyst checklist එකක් විදිහට ලියලා තියෙන්නේ: අනිසි භාවිතය පිටතින් පේන්නේ කොහොමද, කුමන data points check කරන්නද, කාට escalate කරන්නද කියලා. Exact exploit steps සහ system-bypass mechanics හිතාමතාම අයින් කරලා තියෙන්නේ — pattern එක catch කරන්න ඒ detail අවශ්‍ය නැති නිසා.",
+  nav1:"01 · Chip Dumping", nav2:"02 · Hide Balance / Force Close", nav3:"03 · Multiple Account Creation", nav4:"04 · Refer-a-Friend Abuse", nav5:"05 · In-Out / Bonus Farming", navChain:"Fraud Chain", navQuiz:"තමන්ව Check කරගන්න",
+  whatIs:"මෙය මොකක්ද", signalsLbl:"හඳුනාගැනීමේ සලකුණු", escLbl:"Escalation කිරීම",
+  highSev:"High Severity", medSev:"Medium Severity",
+  p1title:"Chip Dumping / Opposite Betting",
+  p1def:"සම්බන්ධිත accounts 2ක් හෝ ඊට වැඩි ගණනක් එකම round එකේ opposite outcomes මත bet කරනවා (එකක් Player, එකක් Banker වගේ) — කවුරු දිනුවත් balance එක account එකකින් අනිත් එකට ගමන් කරනවා, net loss එකක් නැතුව.",
+  p1s1:"එකම table/round එකේ accounts 2ක් opposite outcomes මත bet කරනවා",
+  p1s2:"Session ගානක් පුරා accounts දෙකේම win/loss timing එක inverse correlation එකක් පෙන්නනවා",
+  p1s3:"Accounts අතර device ID, IP, payment method, KYC details share වෙනවා",
+  p1s4:"Accounts දෙකේම bet sizes mirror වෙනවා (එකම amount pattern එක)",
+  p1s5:"Pair එකේ net balance එක ආසන්න වශයෙන් flat වෙද්දී එක account එකක withdrawable balance එක ඉහළ යනවා",
+  p1esc:"Account pair එක linkage review එකකට flag කරන්න, shared session/device fingerprint report එක ගන්න, investigation එක අවසන් වෙනකම් accounts දෙකේම withdrawals hold කරන්න.",
+  p2title:"Hide Balance / Force Close Bonus Fraud",
+  p2def:"Player කෙනෙක් gameplay අතරතුර displayed balance එක manipulate කරලා, system එකට session එක loss එකක් විදිහට misread වෙන්න සලස්වනවා — ඒකෙන් automatic bonus forfeiture එකක් trigger වෙලා, required wagering එක සම්පූර්ණ නොකළත් turnover restriction ඉවත් වෙනවා.",
+  p2s1:"Bet log එකේ matching loss transaction එකක් නැතුව balance එක ක්ෂණිකව ආසන්න 0කට වැටෙනවා",
+  p2s2:"ඒ unexplained balance drop එකට minutes කිහිපයක් ඇතුළත minimum-value deposit එකක් වදිනවා",
+  p2s3:"ඒ deposit event එකට වහාම පස්සේ bonus status එක \"active\" සිට \"forfeited\" බවට වෙනස් වෙනවා",
+  p2s4:"Bonus එක forfeit වෙන මොහොතේ turnover completion percentage එක අඩුයි හෝ 0ට ආසන්නයි",
+  p2s5:"එකම balance-drop → min-deposit → forfeiture sequence එක player කෙනෙක්ට sessions ගණනාවක් පුරා repeat වෙනවා",
+  p2esc:"Withdrawal එක hold කරන්න, bonus ledger එකේ status-change timestamps, balance/deposit event log එකට එරෙහිව audit කරන්න, system forfeiture flag එකට වඩා raw bet history එකට එරෙහිව turnover completion එක verify කරන්න.",
+  p3title:"Multiple Account Creation (MAC)",
+  p3def:"එක් පුද්ගලයෙක් accounts කිහිපයක් හදලා, එක් පුද්ගලයෙකුට එකක් විදිහට තියෙන welcome/first-deposit bonus එක repeat කරලා claim කරන්න try කරනවා.",
+  p3s1:"Accounts කිහිපයක් device ID, IP range, payment method, හෝ personal details overlap වෙනවා",
+  p3s2:"Accounts වල registration timestamps ළඟින්ම cluster වෙනවා",
+  p3s3:"Bonus credit වහාම පස්සේ almost identical gameplay pattern එකක්, ඊට පස්සේ inactivity",
+  p3s4:"Welcome bonus එක consume කරලා withdraw කරාට පස්සේ accounts dormant වෙනවා",
+  p3esc:"Flag වුණ cluster එක පුරා KYC fields සහ device fingerprinting cross-reference කරන්න, accounts එකිනෙකා වෙන වෙනම review කරනවා වෙනුවට එකට group කරලා consolidated review එකක් කරන්න.",
+  p4title:"Refer a Friend (RAF) Bonus Abuse",
+  p4def:"සැබෑ player අලුතින් refer කරනවා වෙනුවට, කවුරුහරි තමන්ම control කරන accounts refer කරලා referral bonus එක ලබාගන්නවා, ඊට පස්සේ funds එකම main account එකකට consolidate කරනවා.",
+  p4s1:"Referrer සහ referred account identifying attributes (device, IP, payment details) share කරනවා",
+  p4s2:"Referred accounts link එකෙන් register වුණත් bonus claim කරන්න කලින් genuine engagement එකක් අඩුවෙන් පෙන්නනවා",
+  p4s3:"Referral bonus funds වහාම පස්සේ එකම account එකකට move වෙනවා — බොහෝවිට Pattern 01 chip-dumping style transfers එක්ක overlap වෙනවා",
+  p4s4:"එක් referral link එකක් player කෙනෙකුගේ referral volume එකෙන් අසාමාන්‍ය ලෙස ලොකු share එකක් ගන්නවා",
+  p4esc:"Flag වුණ link එකේ referral graph එක map කරන්න, downstream fund consolidation path එක check කරන්න, Pattern 01 සහ Pattern 03 linkage data එක්ක cross-check කරන්න.",
+  p5title:"In-Out Fraud / Bonus Farming",
+  p5def:"Player කෙනෙක් තමන්ගේ risk එක අවම කරගෙන, deposit → bonus → turnover → withdrawal cycle එක repeat කරමින්, සාමාන්‍ය gaming profit එකක් වෙනුවට bonus amount එකම guaranteed profit එකක් විදිහට farm කරනවා.",
+  p5s1:"එකම account එකේ කෙටි කාලයක් ඇතුළත high-frequency deposit/withdraw cycling",
+  p5s2:"Turnover complete කරද්දී අසාමාන්‍ය ලෙස අඩු win/loss variance — real risk එකක් නොවෙන්න bet sizes සකසලා",
+  p5s3:"Turnover requirement එක සම්පූර්ණ වුණාට ඉතාම ළඟින්ම withdrawal request කරනවා",
+  p5s4:"එකම deposit → bonus → withdraw cycle එක consecutive bonus periods ගණනාවක් පුරා repeat වෙනවා",
+  p5s5:"Player ගේ bonus-to-turnover ratio එක cycle එකෙන් cycle එකට minimum threshold එකට ආසන්නව ම constant ව තියෙනවා",
+  p5esc:"Player level එකේ bonus-to-turnover ratio එකයි cycle frequency එකයි කාලයක් පුරා track කරන්න, sustained low-variance turnover completion තියෙන accounts bonus eligibility review එකකට flag කරන්න.",
+  chainTitle:"ඇයි indicator එකක් විතරක් ඇති නැත්තේ",
+  chainDef:"මේ patterns තනිව සිදුවෙන එකක් අඩුයි. සැබෑ fraud case එකක් බොහෝවිට patterns කිහිපයක් chain වෙනවා — indicator එකක් විතරක් බලලා තීරණය නොගන්න: account linkages, deposit/withdrawal history, betting pattern, bonus history, transaction history එකට එකතු කරලා බලන්න.",
+  chainNode1:"MAC / RAF", chainNode2:"Bonus ලබාගැනීම", chainNode3:"Hide Balance / Force Close", chainNode4:"Chip Dumping", chainNode5:"Withdrawal",
+  quizTitle:"තමන්ව check කරගන්න", quizScore:"Score: ",
+  q1p:"Player කෙනෙකුගේ balance එක bet log එකේ matching loss එකක් නැතුව ක්ෂණිකව 0ට ආසන්නව වැටිලා, minutes කිහිපයකින් minimum deposit එකක් වදිනවා. මේක කුමන pattern එකද?",
+  q1a:"Chip Dumping", q1b:"Hide Balance / Force Close Bonus Fraud", q1c:"Multiple Account Creation",
+  q1fb:"Balance-drop → min-deposit → forfeiture sequence එක Hide Balance / Force Close fraud එකේ signature එකයි.",
+  q2p:"Round එකක accounts 2ක් opposite bets දානවා, results එකේම inverse. මුලින්ම check කරන්න ඕන මොකක්ද?",
+  q2a:"Accounts අතර shared device/IP report එක", q2b:"Player ගේ favorite game එක", q2c:"Account creation date එක",
+  q2fb:"Device, IP, හෝ payment linkage share වීම තමයි accounts දෙක ඇත්තටම එකම operator කෙනෙක් run කරන chip dumping එකක් කියලා confirm කරන්නේ.",
+  q3p:"Player කෙනෙක් deposit කරලා, reload bonus එකක් claim කරලා, turnover fast clear කරන්න variance අඩු bets දාලා, withdraw කරලා, ඊට පස්සේ ඒ cycle එකම සතියෙන් සතියට repeat කරනවා. මේකට කියන්නේ මොකක්ද?",
+  q3a:"Refer-a-Friend Abuse", q3b:"In-Out Fraud / Bonus Farming", q3c:"Multiple Account Creation",
+  q3fb:"Low-variance turnover clearing එකයි repeat වෙන deposit-withdraw cycle එකයි bonus farming එකේ core signature එක.",
+  q4p:"Fraud case එකක් indicator එකක් විතරක් බලලා ඇයි flag කරන්න බෑ?",
+  q4a:"Single indicators හැමවෙලේම false positives", q4b:"සැබෑ fraud එකක් බොහෝවිට patterns කිහිපයක් chain වෙනවා, ඒ නිසා linkage, transaction, betting data එකට එකතු කරලා review කරන්න ඕන", q4c:"Review කරන්න කලින් අඩුම ගණනේ flags 5ක් policy එකෙන් require කරනවා",
+  q4fb:"හරි — MAC/RAF, balance manipulation, chip dumping බොහෝවිට chain වෙලා case එකක් වෙනවා, ඒ නිසා single flag එකකට වඩා full data picture එක වැදගත්.",
+  footer:"අභ්‍යන්තර reference එකක් — Risk Division. Onboarding සහ pattern-recognition training සඳහා පමණි."
+},
+ta:{
+  eyebrow:"Risk Ops — உள் பயிற்சி வழிகாட்டி",
+  title:"Bonus முறைகேடு முறைகளை அடையாளம் காணுதல்",
+  lede:"பல player கணக்குகள் முழுவதும் ஒருங்கிணைந்த bonus/turnover முறைகேட்டை கண்டறிய உதவும் reference. Transaction/account தரவுகளில் signal-ஐ கண்டறிய வடிவமைக்கப்பட்டது — இந்த scheme-ஐ எப்படி நடத்துவது என்பதன் விளக்கம் அல்ல.",
+  scopeB:"நோக்கம் & scope.",
+  scopeText:"கீழே உள்ள ஒவ்வொரு pattern-உம் analyst checklist ஆக எழுதப்பட்டுள்ளது: முறைகேடு வெளியில் இருந்து எப்படி தெரியும், எந்த data points-ஐ சரிபார்க்க வேண்டும், யாருக்கு escalate செய்ய வேண்டும். Exact exploit steps மற்றும் system-bypass mechanics வேண்டுமென்றே விடுபடுத்தப்பட்டுள்ளன — pattern-ஐ கண்டறிய அந்த விவரம் தேவையில்லை.",
+  nav1:"01 · Chip Dumping", nav2:"02 · Hide Balance / Force Close", nav3:"03 · Multiple Account Creation", nav4:"04 · Refer-a-Friend Abuse", nav5:"05 · In-Out / Bonus Farming", navChain:"Fraud Chain", navQuiz:"உங்களை Check செய்யுங்கள்",
+  whatIs:"இது என்ன", signalsLbl:"கண்டறியும் அறிகுறிகள்", escLbl:"Escalation",
+  highSev:"High Severity", medSev:"Medium Severity",
+  p1title:"Chip Dumping / Opposite Betting",
+  p1def:"இணைக்கப்பட்ட 2 அல்லது அதற்கு மேற்பட்ட கணக்குகள் ஒரே round-இல் எதிரெதிர் outcome-களில் (ஒன்று Player, ஒன்று Banker) பந்தயம் கட்டுகின்றன — யார் வென்றாலும் balance ஒரு கணக்கிலிருந்து மற்றொன்றுக்கு நகர்கிறது, net loss இல்லாமல்.",
+  p1s1:"ஒரே table/round-இல் 2 கணக்குகள் எதிரெதிர் outcome-களில் பந்தயம் கட்டுகின்றன",
+  p1s2:"பல session-களிலும் இரு கணக்குகளின் win/loss நேரம் தலைகீழாக தொடர்புடையதாக இருக்கும்",
+  p1s3:"கணக்குகளுக்கிடையே device ID, IP, payment method, KYC விவரங்கள் பகிரப்படுகின்றன",
+  p1s4:"இரு கணக்குகளிலும் bet அளவுகள் ஒரே மாதிரி நகர்கின்றன (mirrored stakes)",
+  p1s5:"ஜோடியின் net balance கிட்டத்தட்ட மாறாமல் இருக்கும்போது ஒரு கணக்கின் withdrawable balance உயரும்",
+  p1esc:"கணக்கு ஜோடியை linkage review-க்கு flag செய்யவும், shared session/device fingerprint report-ஐ பெறவும், விசாரணை முடியும் வரை இரு கணக்குகளின் withdrawal-ஐயும் hold செய்யவும்.",
+  p2title:"Hide Balance / Force Close Bonus Fraud",
+  p2def:"ஒரு player gameplay-ன் போது காட்டப்படும் balance-ஐ manipulate செய்து, system session-ஐ loss ஆக தவறாக படிக்கச் செய்கிறார் — இது automatic bonus forfeiture-ஐ trigger செய்து, தேவையான wagering முடிக்கப்படாத போதும் turnover restriction-ஐ நீக்குகிறது.",
+  p2s1:"Bet log-இல் பொருந்தும் loss transaction இல்லாமல் balance திடீரென almost 0-ஆக குறைகிறது",
+  p2s2:"அந்த விளக்கமில்லா balance drop-க்கு நிமிடங்களுக்குள் minimum-value deposit வருகிறது",
+  p2s3:"அந்த deposit நிகழ்விற்குப் பிறகு உடனடியாக bonus status \"active\"-இலிருந்து \"forfeited\"-ஆக மாறுகிறது",
+  p2s4:"Bonus forfeit ஆகும் தருணத்தில் turnover completion percentage குறைவாக அல்லது almost 0 ஆக இருக்கும்",
+  p2s5:"அதே balance-drop → min-deposit → forfeiture sequence அதே player-க்கு பல session-களில் மீண்டும் மீண்டும் நடக்கிறது",
+  p2esc:"Withdrawal-ஐ hold செய்யவும், bonus ledger-இன் status-change timestamps-ஐ balance/deposit event log-உடன் ஒப்பிட்டு audit செய்யவும், system-இன் forfeiture flag-ஐ விட raw bet history-உடன் turnover completion-ஐ சரிபார்க்கவும்.",
+  p3title:"Multiple Account Creation (MAC)",
+  p3def:"ஒரு நபர் ஒருவருக்கு ஒன்று என்ற welcome/first-deposit bonus-ஐ மீண்டும் மீண்டும் claim செய்ய பல கணக்குகளை உருவாக்குகிறார்.",
+  p3s1:"பல கணக்குகள் device ID, IP range, payment method, அல்லது personal details-ஐ பகிர்ந்து/overlap செய்கின்றன",
+  p3s2:"கணக்குகளின் registration timestamps நெருக்கமாக cluster ஆகின்றன",
+  p3s3:"Bonus credit ஆன உடனேயே கிட்டத்தட்ட ஒரே மாதிரியான gameplay pattern, பின்னர் செயலற்ற நிலை",
+  p3s4:"Welcome bonus-ஐ பயன்படுத்தி withdraw செய்த பிறகு கணக்குகள் செயலற்றுப் போகின்றன",
+  p3esc:"Flag செய்யப்பட்ட cluster முழுவதும் KYC fields மற்றும் device fingerprinting-ஐ cross-reference செய்யவும், தனித்தனியாக மதிப்பீடு செய்வதற்குப் பதிலாக கணக்குகளை group செய்து consolidated review செய்யவும்.",
+  p4title:"Refer a Friend (RAF) Bonus Abuse",
+  p4def:"உண்மையான புதிய players-ஐ refer செய்வதற்குப் பதிலாக, ஒருவர் தாங்களே கட்டுப்படுத்தும் கணக்குகளை refer செய்து referral bonus-ஐப் பெறுகிறார், பின்னர் நிதியை ஒரே main கணக்குக்கு திரட்டுகிறார்.",
+  p4s1:"Referrer மற்றும் referred கணக்கு identifying attributes (device, IP, payment details) பகிர்கின்றன",
+  p4s2:"Referred கணக்குகள் link மூலம் register ஆகின்றன ஆனால் bonus claim செய்வதற்கு முன் குறைந்த உண்மையான engagement-ஐ காட்டுகின்றன",
+  p4s3:"Referral bonus நிதி விரைவில் ஒரே கணக்குக்கு நகர்கிறது — பெரும்பாலும் Pattern 01 chip-dumping style transfers உடன் overlap ஆகும்",
+  p4s4:"ஒரு referral link ஒரு player-இன் referral volume-இல் அசாதாரணமாக அதிக பங்கைக் கொண்டுள்ளது",
+  p4esc:"Flag செய்யப்பட்ட link-இன் referral graph-ஐ map செய்யவும், downstream fund consolidation path-ஐ சரிபார்க்கவும், Pattern 01 மற்றும் Pattern 03 linkage தரவுடன் cross-check செய்யவும்.",
+  p5title:"In-Out Fraud / Bonus Farming",
+  p5def:"ஒரு player தனது risk-ஐ குறைத்துக்கொண்டு, deposit → bonus → turnover → withdrawal cycle-ஐ மீண்டும் மீண்டும் செய்து, சாதாரண gaming profit-க்குப் பதிலாக bonus amount-ஐயே guaranteed profit ஆக farm செய்கிறார்.",
+  p5s1:"ஒரே கணக்கில் குறுகிய காலத்தில் high-frequency deposit/withdraw cycling",
+  p5s2:"Turnover முடிக்கும் போது அசாதாரணமாக குறைந்த win/loss variance — real risk-ஐ தவிர்க்க bet அளவுகள் அமைக்கப்படுகின்றன",
+  p5s3:"Turnover requirement முடிந்த உடனேயே withdrawal கோரப்படுகிறது",
+  p5s4:"அதே deposit → bonus → withdraw cycle தொடர்ச்சியான bonus periods பலவற்றில் மீண்டும் மீண்டும் நடக்கிறது",
+  p5s5:"Player-இன் bonus-to-turnover ratio ஒவ்வொரு cycle-இலும் minimum threshold அளவிலேயே தொடர்ந்து இருக்கும்",
+  p5esc:"Player level-இல் bonus-to-turnover ratio மற்றும் cycle frequency-ஐ காலப்போக்கில் track செய்யவும், தொடர்ந்து low-variance turnover completion கொண்ட கணக்குகளை bonus eligibility review-க்கு flag செய்யவும்.",
+  chainTitle:"ஏன் ஒரு indicator மட்டும் போதாது",
+  chainDef:"இந்த patterns தனித்தனியாக அரிதாகவே நடக்கும். ஒரு உண்மையான fraud case பெரும்பாலும் பல patterns-ஐ chain செய்யும் — ஒரு indicator-ஐ மட்டும் வைத்து முடிவெடுக்க வேண்டாம்: account linkages, deposit/withdrawal history, betting pattern, bonus history, transaction history எல்லாவற்றையும் சேர்த்துப் பாருங்கள்.",
+  chainNode1:"MAC / RAF", chainNode2:"Bonus பெறப்பட்டது", chainNode3:"Hide Balance / Force Close", chainNode4:"Chip Dumping", chainNode5:"Withdrawal",
+  quizTitle:"உங்களை சோதிக்கவும்", quizScore:"Score: ",
+  q1p:"ஒரு player-இன் balance, bet log-இல் பொருந்தும் loss இல்லாமல் திடீரென almost 0-ஆக குறைந்து, நிமிடங்களில் minimum deposit வருகிறது. இது எந்த pattern?",
+  q1a:"Chip Dumping", q1b:"Hide Balance / Force Close Bonus Fraud", q1c:"Multiple Account Creation",
+  q1fb:"Balance-drop → min-deposit → forfeiture sequence தான் Hide Balance / Force Close fraud-இன் signature.",
+  q2p:"ஒரே round-இல் 2 கணக்குகள் எதிரெதிர் bets கட்டுகின்றன, results எப்போதும் தலைகீழ். முதலில் என்ன சரிபார்க்க வேண்டும்?",
+  q2a:"கணக்குகளுக்கிடையே shared device/IP report", q2b:"Player-இன் favorite game", q2c:"Account creation date",
+  q2fb:"Device, IP, அல்லது payment linkage பகிரப்படுவது தான் இரு கணக்குகளும் உண்மையில் chip dumping நடத்தும் ஒரே நபர் என்பதை உறுதிப்படுத்தும்.",
+  q3p:"ஒரு player deposit செய்து, reload bonus claim செய்து, turnover-ஐ வேகமாக முடிக்க குறைந்த variance-உடன் bet செய்து, withdraw செய்து, பின் அதே cycle-ஐ ஒவ்வொரு வாரமும் திரும்பச் செய்கிறார். இதை என்ன என்று அழைப்பீர்கள்?",
+  q3a:"Refer-a-Friend Abuse", q3b:"In-Out Fraud / Bonus Farming", q3c:"Multiple Account Creation",
+  q3fb:"Low-variance turnover clearing மற்றும் மீண்டும் நடக்கும் deposit-withdraw cycle தான் bonus farming-இன் முக்கிய signature.",
+  q4p:"ஒரு fraud case-ஐ ஏன் ஒரு indicator மட்டும் வைத்து flag செய்யக்கூடாது?",
+  q4a:"Single indicators எப்போதும் false positives", q4b:"உண்மையான fraud பெரும்பாலும் பல patterns-ஐ chain செய்யும், எனவே linkage, transaction, betting தரவை ஒன்றாக review செய்ய வேண்டும்", q4c:"Review செய்வதற்கு முன் குறைந்தது 5 flags policy-ஆல் தேவை",
+  q4fb:"சரி — MAC/RAF, balance manipulation, chip dumping பெரும்பாலும் chain ஆகி ஒரு case ஆகும், எனவே single flag-ஐ விட முழு data picture முக்கியம்.",
+  footer:"உள் reference — Risk Division. Onboarding மற்றும் pattern-recognition பயிற்சிக்காக மட்டும்."
+}
+};
+
+let currentLang = 'en';
+
+function buildMain(){
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <section class="pattern" id="p1" data-open="false">
+      <div class="pattern-head" data-toggle="p1">
+        <div class="head-left">
+          <span class="pattern-id">PATTERN 01</span>
+          <span class="pattern-title" data-i18n="p1title"></span>
+        </div>
+        <div class="head-right">
+          <span class="severity" data-i18n="highSev"></span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="pattern-body-wrap"><div class="pattern-body">
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="whatIs"></span></div><p class="definition" data-i18n="p1def"></p></div>
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="signalsLbl"></span></div>
+          <ul class="signals">
+            <li data-i18n="p1s1"></li><li data-i18n="p1s2"></li><li data-i18n="p1s3"></li><li data-i18n="p1s4"></li><li data-i18n="p1s5"></li>
+          </ul>
+        </div>
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="escLbl"></span></div><p class="escalation" data-i18n="p1esc"></p></div>
+      </div></div>
+    </section>
+
+    <section class="pattern" id="p2" data-open="false">
+      <div class="pattern-head" data-toggle="p2">
+        <div class="head-left">
+          <span class="pattern-id">PATTERN 02</span>
+          <span class="pattern-title" data-i18n="p2title"></span>
+        </div>
+        <div class="head-right">
+          <span class="severity" data-i18n="highSev"></span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="pattern-body-wrap"><div class="pattern-body">
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="whatIs"></span></div><p class="definition" data-i18n="p2def"></p></div>
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="signalsLbl"></span></div>
+          <ul class="signals">
+            <li data-i18n="p2s1"></li><li data-i18n="p2s2"></li><li data-i18n="p2s3"></li><li data-i18n="p2s4"></li><li data-i18n="p2s5"></li>
+          </ul>
+        </div>
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="escLbl"></span></div><p class="escalation" data-i18n="p2esc"></p></div>
+      </div></div>
+    </section>
+
+    <section class="pattern" id="p3" data-open="false">
+      <div class="pattern-head" data-toggle="p3">
+        <div class="head-left">
+          <span class="pattern-id">PATTERN 03</span>
+          <span class="pattern-title" data-i18n="p3title"></span>
+        </div>
+        <div class="head-right">
+          <span class="severity med" data-i18n="medSev"></span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="pattern-body-wrap"><div class="pattern-body">
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="whatIs"></span></div><p class="definition" data-i18n="p3def"></p></div>
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="signalsLbl"></span></div>
+          <ul class="signals">
+            <li data-i18n="p3s1"></li><li data-i18n="p3s2"></li><li data-i18n="p3s3"></li><li data-i18n="p3s4"></li>
+          </ul>
+        </div>
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="escLbl"></span></div><p class="escalation" data-i18n="p3esc"></p></div>
+      </div></div>
+    </section>
+
+    <section class="pattern" id="p4" data-open="false">
+      <div class="pattern-head" data-toggle="p4">
+        <div class="head-left">
+          <span class="pattern-id">PATTERN 04</span>
+          <span class="pattern-title" data-i18n="p4title"></span>
+        </div>
+        <div class="head-right">
+          <span class="severity med" data-i18n="medSev"></span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="pattern-body-wrap"><div class="pattern-body">
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="whatIs"></span></div><p class="definition" data-i18n="p4def"></p></div>
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="signalsLbl"></span></div>
+          <ul class="signals">
+            <li data-i18n="p4s1"></li><li data-i18n="p4s2"></li><li data-i18n="p4s3"></li><li data-i18n="p4s4"></li>
+          </ul>
+        </div>
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="escLbl"></span></div><p class="escalation" data-i18n="p4esc"></p></div>
+      </div></div>
+    </section>
+
+    <section class="pattern" id="p5" data-open="false">
+      <div class="pattern-head" data-toggle="p5">
+        <div class="head-left">
+          <span class="pattern-id">PATTERN 05</span>
+          <span class="pattern-title" data-i18n="p5title"></span>
+        </div>
+        <div class="head-right">
+          <span class="severity med" data-i18n="medSev"></span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="pattern-body-wrap"><div class="pattern-body">
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="whatIs"></span></div><p class="definition" data-i18n="p5def"></p></div>
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="signalsLbl"></span></div>
+          <ul class="signals">
+            <li data-i18n="p5s1"></li><li data-i18n="p5s2"></li><li data-i18n="p5s3"></li><li data-i18n="p5s4"></li><li data-i18n="p5s5"></li>
+          </ul>
+        </div>
+        <div class="field"><div class="field-label"><span class="bar"></span><span data-i18n="escLbl"></span></div><p class="escalation" data-i18n="p5esc"></p></div>
+      </div></div>
+    </section>
+
+    <section class="chain-section" id="chain">
+      <div class="pattern-title" data-i18n="chainTitle" style="margin-bottom:6px;"></div>
+      <p class="chain-note" data-i18n="chainDef" style="margin-bottom:18px;"></p>
+      <div class="chain-flow">
+        <span class="chain-node" data-i18n="chainNode1"></span><span class="chain-arrow">→</span>
+        <span class="chain-node" data-i18n="chainNode2"></span><span class="chain-arrow">→</span>
+        <span class="chain-node risk" data-i18n="chainNode3"></span><span class="chain-arrow">→</span>
+        <span class="chain-node risk" data-i18n="chainNode4"></span><span class="chain-arrow">→</span>
+        <span class="chain-node" data-i18n="chainNode5"></span>
+      </div>
+    </section>
+
+    <section class="quiz-section" id="quiz">
+      <div class="quiz-head">
+        <div class="quiz-title" data-i18n="quizTitle"></div>
+        <div class="quiz-score"><span data-i18n="quizScore"></span><span id="scoreVal">0</span>/4</div>
+      </div>
+      <div id="quizList"></div>
+    </section>
+  `;
+
+  buildQuiz();
+  buildToggles();
+}
+
+const quizData = [
+  {id:'q1', promptKey:'q1p', opts:['q1a','q1b','q1c'], correct:1, fbKey:'q1fb'},
+  {id:'q2', promptKey:'q2p', opts:['q2a','q2b','q2c'], correct:0, fbKey:'q2fb'},
+  {id:'q3', promptKey:'q3p', opts:['q3a','q3b','q3c'], correct:1, fbKey:'q3fb'},
+  {id:'q4', promptKey:'q4p', opts:['q4a','q4b','q4c'], correct:1, fbKey:'q4fb'}
+];
+let score = 0;
+let answered = {};
+
+function buildQuiz(){
+  const list = document.getElementById('quizList');
+  list.innerHTML = quizData.map(q => `
+    <div class="q-card" data-qid="${q.id}">
+      <div class="q-prompt" data-i18n="${q.promptKey}"></div>
+      <div class="q-options">
+        ${q.opts.map((ok,i) => `<button class="q-option" data-qid="${q.id}" data-idx="${i}" data-i18n="${ok}"></button>`).join('')}
+      </div>
+      <div class="q-feedback" data-fb="${q.id}"><span data-i18n="${q.fbKey}"></span></div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.q-option').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const qid = btn.dataset.qid;
+      if(answered[qid]) return;
+      const q = quizData.find(x=>x.id===qid);
+      const idx = parseInt(btn.dataset.idx);
+      const card = list.querySelector(`.q-card[data-qid="${qid}"]`);
+      const allBtns = card.querySelectorAll('.q-option');
+      allBtns.forEach(b=>b.disabled = true);
+      if(idx === q.correct){
+        btn.classList.add('correct');
+        score++;
+        document.getElementById('scoreVal').textContent = score;
+      } else {
+        btn.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct');
+      }
+      card.querySelector('.q-feedback').classList.add('show');
+      answered[qid] = true;
+    });
+  });
+}
+
+function buildToggles(){
+  document.querySelectorAll('[data-toggle]').forEach(head=>{
+    head.addEventListener('click', ()=>{
+      const section = document.getElementById(head.dataset.toggle);
+      section.classList.toggle('open');
+    });
+  });
+}
+
+function applyLang(lang){
+  currentLang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(T[lang][key] !== undefined) el.textContent = T[lang][key];
+  });
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=> applyLang(btn.dataset.lang));
+});
+
+buildMain();
+applyLang('en');
+
+// scroll reveal
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('in-view');
+  });
+}, {threshold:0.1});
+document.querySelectorAll('.pattern').forEach(p=>observer.observe(p));
+</script>
 </body>
 </html>
